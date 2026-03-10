@@ -10,12 +10,11 @@
 | **Тесты** | CI | `npm run test:ci` (Jest + coverage) |
 | **Сборка** | CI | `npm run build` → папка `release/` |
 | **Артефакты** | CI | В разделе Actions → Run → Artifacts: `artifacts` (coverage + release) |
-| **Деплой** | Deploy | Статика из `deploy/index.html.template` на GitHub Pages |
+| **Деплой** | CI (job deploy) | Только при push в main: скачивает артефакт из того же run, папку `dist/` публикует на Pages |
 
 ## Файлы workflow
 
-- **`.github/workflows/ci.yml`** — один job: Install → Lint → Test → Build → Upload artifacts (coverage и release в один архив).
-- **`.github/workflows/deploy.yml`** — запускается после успешного CI: скачивает артефакт (из того же run), папку `dist/` из него публикует на GitHub Pages.
+- **`.github/workflows/ci.yml`** — два job в одном run: `pipeline` (lint → test → build → артефакт с coverage, release, dist) и `deploy` (только при push: скачивает артефакт → публикует dist на GitHub Pages).
 
 При push тега `v*` (например `v1.0.2`) запускается **Release**: создаётся новый релиз в **Releases** с zip-артефактом в разделе Assets.
 

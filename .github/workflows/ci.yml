@@ -1,5 +1,5 @@
-# Учебный пайплайн: линт → тесты → сборка → артефакты
-# Запуск: push или PR в main/master
+# Учебный пайплайн: линт → тесты → сборка → артефакты → деплой на Pages из артефакта
+# Запуск: push или PR в main/master (деплой только при push в main/master)
 
 name: CI
 
@@ -50,3 +50,27 @@ jobs:
             coverage/
             release/
             dist/
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: pipeline
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: github-pages
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: artifacts
+
+      - name: Deploy to Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Publish
+        uses: actions/deploy-pages@v4
