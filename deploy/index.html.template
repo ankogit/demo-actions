@@ -13,7 +13,7 @@
   </style>
 </head>
 <body>
-  <h1>Привет, мир!{{NAME}}</h1>
+  <h1>Привет, мир!</h1>
   <h2>Проект: {{NAME}}</h2>
   <p>Демо-проект для GitHub Actions (JavaScript).</p>
   <p class="meta">Версия: {{VERSION}} · Собрано и задеплоено через GitHub Actions.</p>
