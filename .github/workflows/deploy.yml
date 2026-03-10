@@ -1,15 +1,18 @@
-# Деплой на GitHub Pages
-# Запуск: push в main/master (после успешного CI или отдельно)
+# Деплой на GitHub Pages из артефакта CI
+# Запуск: после успешного завершения workflow CI (push в main/master)
 
 name: Deploy
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main, master]
 
 jobs:
   deploy:
     name: Deploy to GitHub Pages
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     environment: github-pages
     permissions:
@@ -18,14 +21,11 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Build site
-        run: |
-          mkdir -p dist
-          VERSION=$(node -p "require('./package.json').version")
-          NAME=$(node -p "require('./package.json').name")
-          sed -e "s/{{VERSION}}/$VERSION/g" -e "s/{{NAME}}/$NAME/g" deploy/index.html.template > dist/index.html
+      - name: Download artifact from CI
+        uses: actions/download-artifact@v4
+        with:
+          name: artifacts
+          run-id: ${{ github.event.workflow_run.id }}
 
       - name: Deploy to Pages
         uses: actions/upload-pages-artifact@v3

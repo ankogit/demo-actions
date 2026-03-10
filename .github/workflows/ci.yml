@@ -35,6 +35,13 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Build site for Pages
+        run: |
+          mkdir -p dist
+          VERSION=$(node -p "require('./package.json').version")
+          NAME=$(node -p "require('./package.json').name")
+          sed -e "s/{{VERSION}}/$VERSION/g" -e "s/{{NAME}}/$NAME/g" deploy/index.html.template > dist/index.html
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -42,3 +49,4 @@ jobs:
           path: |
             coverage/
             release/
+            dist/
