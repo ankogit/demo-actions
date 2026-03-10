@@ -1,25 +1,16 @@
-# Deploy — публикация на GitHub Pages
-# Демонстрирует: деплой после успешного CI, environment, артефакт для Pages
+# Деплой на GitHub Pages
+# Запуск: push в main/master (после успешного CI или отдельно)
 
 name: Deploy
 
 on:
   push:
     branches: [main, master]
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [main, master]
-
-concurrency:
-  group: deploy
-  cancel-in-progress: false
 
 jobs:
   deploy:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') }}
     environment: github-pages
     permissions:
       contents: read
@@ -27,14 +18,7 @@ jobs:
       id-token: write
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "npm"
+      - uses: actions/checkout@v4
 
       - name: Build site
         run: |
@@ -43,11 +27,10 @@ jobs:
           NAME=$(node -p "require('./package.json').name")
           sed -e "s/{{VERSION}}/$VERSION/g" -e "s/{{NAME}}/$NAME/g" deploy/index.html.template > dist/index.html
 
-      - name: Upload artifact for Pages
+      - name: Deploy to Pages
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
-      - name: Deploy to GitHub Pages
-        id: deploy
+      - name: Publish
         uses: actions/deploy-pages@v4
