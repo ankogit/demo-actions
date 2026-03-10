@@ -1,0 +1,45 @@
+# Release — создание релиза по тегу
+# Релиз = артефакт (zip) в GitHub Release + опционально деплой на сервер
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    name: Build & Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test:ci
+      - run: npm run build
+
+      - name: Create release archive
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          cd release && zip -r ../demo-actions-$VERSION.zip . && cd ..
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Create Release and upload artifact
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          draft: false
+          files: demo-actions-${{ env.VERSION }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

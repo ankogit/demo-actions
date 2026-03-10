@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{NAME}} — v{{VERSION}}</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; max-width: 42rem; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; }
+    h1 { font-size: 1.5rem; }
+    .meta { color: #666; font-size: 0.9rem; margin-top: 1rem; }
+    .deployed { background: #e8f5e9; padding: 0.5rem 0.75rem; border-radius: 6px; margin-top: 1.5rem; }
+  </style>
+</head>
+<body>
+  <h1>{{NAME}}</h1>
+  <p>Демо-проект для GitHub Actions (JavaScript).</p>
+  <p class="meta">Версия: {{VERSION}} · Собрано и задеплоено через GitHub Actions.</p>
+  <p class="deployed">✓ Деплой на GitHub Pages выполнен успешно.</p>
+</body>
+</html>
